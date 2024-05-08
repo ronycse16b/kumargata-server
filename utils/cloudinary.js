@@ -1,48 +1,49 @@
-import { v2 as cloudinary } from "cloudinary"
-import fs from "fs"
-
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
 cloudinary.config({
-    cloud_name: 'dtl40ser2',
-    api_key: '899187148257927',
-    api_secret: '5RUCBDjd9L5PKcL-volH7Bf1y1U'
+  cloud_name: 'dtl40ser2',
+  api_key: '899187148257927',
+  api_secret: '5RUCBDjd9L5PKcL-volH7Bf1y1U'
 });
 
-
-
-
-
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (fileBuffer) => {
     try {
-        if (!localFilePath) return null
-        //upload the file on cloudinary
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
-        })
-        // file has been uploaded successfull
-        //console.log("file is uploaded on cloudinary ", response.url);
-        fs.unlinkSync(localFilePath)
-        return response;
-
+      if (!fileBuffer) return null;
+  
+      // Return a Promise to properly handle the asynchronous operation
+      return new Promise((resolve, reject) => {
+        // Upload the file buffer to Cloudinary
+        cloudinary.uploader.upload_stream({ resource_type: "auto" }, async (error, result) => {
+          if (error) {
+            console.error('Error uploading to Cloudinary:', error);
+            reject('something wrong');
+            return;
+          }
+          // File has been uploaded successfully
+        //   console.log("File uploaded on Cloudinary:", result.url);
+          resolve(result.url); // Resolve the Promise with the uploaded URL
+        }).end(fileBuffer);
+      });
     } catch (error) {
-        console.log(error);
-        fs.unlinkSync(localFilePath) // remove the locally saved temporary file as the upload operation got failed
-        return null;
+      console.error('Error uploading to Cloudinary:', error);
+      return 'something wrong';
     }
-}
+  };
+  
 
 const deleteFromCloudinary = async (imageUrl) => {
-    try {
-        // Extract the public ID from the image URL
-        const publicId = await imageUrl.split('/').pop().split('.')[0];
-        // Delete the image from Cloudinary
-        await cloudinary.uploader.destroy(publicId);
+  try {
+    // Extract the public ID from the image URL
+    const publicId = imageUrl.split('/').pop().split('.')[0];
 
-    } catch (error) {
-        // Handle any errors
-        console.error('Error deleting image from Cloudinary:', error);
-    }
+    // Delete the image from Cloudinary
+    await cloudinary.uploader.destroy(publicId);
+    console.log("Image deleted from Cloudinary");
+  } catch (error) {
+    // Handle any errors
+    console.error('Error deleting image from Cloudinary:', error);
+  }
 };
 
-
-export { uploadOnCloudinary, deleteFromCloudinary }
+export { uploadOnCloudinary, deleteFromCloudinary };

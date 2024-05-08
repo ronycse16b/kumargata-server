@@ -12,7 +12,7 @@ const registerSchema = new mongoose.Schema(
     },
    
     holding: {
-      type: Number,
+      type: String,
       required: true,
     },
     ward: {
@@ -33,7 +33,8 @@ const registerSchema = new mongoose.Schema(
     },
     checkbox: [{
         year: String,
-        total: String
+        total: String,
+        discount:String,
       }],
   },
   {

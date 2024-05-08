@@ -12,11 +12,27 @@ const wardDataSchema = new mongoose.Schema(
     cor: {
       type: Number,
     },
+    motherName: {
+      type: String,
+     
+    },
+    dateOfBirth: {
+      type: Date,
+     
+    },
+    marriedStatus: {
+      type: String,
+     
+    },
+    nid: {
+      type: Number,
+      
+    },
     fatherName: {
       type: String,
     },
     holding: {
-      type: Number,
+      type: String,
     },
     house: {
       type: String,
@@ -49,6 +65,12 @@ const wardDataSchema = new mongoose.Schema(
     qrCode:{
         type:String,
     },
+    potibondhi:{
+        type:String,
+    },
+    gov_vata:{
+        type:String,
+    },
     ward: {
          type:Number
     },
@@ -57,7 +79,8 @@ const wardDataSchema = new mongoose.Schema(
     },
     checkbox: [{
       year: String,
-      total: String
+      total: String,
+      discount: String
     }],
     user: {
       type: String,

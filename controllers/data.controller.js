@@ -1,29 +1,23 @@
-import asyncHandler from 'express-async-handler';
-import WardModel from '../models/ward.model.js';
-import villageModel from '../models/village.name.model.js';
-import WardDataModel from '../models/ward.data.model.js';
-import TaxModel from '../models/tax.register.model.js';
-import NewTaxModel from '../models/new.tax.register.model.js';
-
+import asyncHandler from "express-async-handler";
+import WardModel from "../models/ward.model.js";
+import villageModel from "../models/village.name.model.js";
+import WardDataModel from "../models/ward.data.model.js";
+import TaxModel from "../models/tax.register.model.js";
+import NewTaxModel from "../models/new.tax.register.model.js";
 
 const getWardDataController = asyncHandler(async (req, res) => {
-
   try {
-
     const wards = await WardModel.find({}).sort({ number: 1 });
     if (wards.length > 0) {
       res.status(200).send({ success: true, message: "all-wards", wards });
     } else {
       res.status(200).send([""]);
     }
-
   } catch (error) {
     throw new Error(error.message);
   }
-
-})
+});
 const getVillageDataController = asyncHandler(async (req, res) => {
-
   try {
     const ward_no = req.params.ward;
     const village = await villageModel.find({ w_no: ward_no });
@@ -32,34 +26,44 @@ const getVillageDataController = asyncHandler(async (req, res) => {
     } else {
       res.status(200).send([""]);
     }
-
-  } catch (error) {
-    throw new Error(error.message);
-  }
-
-})
-
-const asesmentMakeDataController = asyncHandler(async (req, res) => {
-  try {
-
-    const { holding, ward } = req.body;
-    const exsistingHolding = await WardDataModel.findOne({ ward: ward, holding: holding });
-    if (exsistingHolding) {
-
-      return res.status(400).send({ success: false, message: "Holding already exists", data: exsistingHolding });
-    }
-
-    const newData = await WardDataModel.create(req.body); // Create a new document with default values
-    res.status(200).send({ success: true, message: "Data saved successfully", data: newData });
   } catch (error) {
     throw new Error(error.message);
   }
 });
 
-// data fetch by ward 
+const asesmentMakeDataController = asyncHandler(async (req, res) => {
+  try {
+    const { holding, ward } = req.body;
+    const exsistingHolding = await WardDataModel.findOne({
+      ward: ward,
+      holding: holding,
+    });
+    if (exsistingHolding) {
+      return res
+        .status(400)
+        .send({
+          success: false,
+          message: "Holding already exists",
+          data: exsistingHolding,
+        });
+    }
+
+    const newData = await WardDataModel.create(req.body); // Create a new document with default values
+    res
+      .status(200)
+      .send({
+        success: true,
+        message: "Data saved successfully",
+        data: newData,
+      });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// data fetch by ward
 const asesmentGetDataController = asyncHandler(async (req, res) => {
   try {
-
     const id = req.params.ward;
 
     const page = parseInt(req.query.page) || 1;
@@ -69,10 +73,10 @@ const asesmentGetDataController = asyncHandler(async (req, res) => {
     const totalPages = Math.ceil(countTotal / perPage);
     const skip = (page - 1) * perPage;
 
-    const data = await WardDataModel.find({ ward: id }).sort({ holding: 1 })
+    const data = await WardDataModel.find({ ward: id })
+      .sort({ holding: 1 })
       .skip(skip)
-      .limit(perPage)
-
+      .limit(perPage);
 
     res.status(200).send({
       success: true,
@@ -89,7 +93,6 @@ const asesmentGetDataController = asyncHandler(async (req, res) => {
 });
 const getSingleDetailsDataController = asyncHandler(async (req, res) => {
   try {
-
     const id = req.params.id;
     const data = await WardDataModel.findById(id);
     res.status(200).send({
@@ -104,6 +107,7 @@ const getSingleDetailsDataController = asyncHandler(async (req, res) => {
 
 const singleDataUpdateController = asyncHandler(async (req, res) => {
   try {
+    
 
     const data = await WardDataModel.findByIdAndUpdate(
       req.params.id,
@@ -124,10 +128,7 @@ const singleDataUpdateController = asyncHandler(async (req, res) => {
 
 const singleDataDeleteController = asyncHandler(async (req, res) => {
   try {
-
-    const data = await WardDataModel.findByIdAndDelete(
-      req.params.id,
-    );
+    const data = await WardDataModel.findByIdAndDelete(req.params.id);
 
     res.status(201).send({
       success: true,
@@ -156,7 +157,6 @@ const allDataCalculateController = asyncHandler(async (req, res) => {
 
 const allDataController = asyncHandler(async (req, res) => {
   try {
-
     const data = await WardDataModel.find({});
     res.status(200).json({
       success: true,
@@ -176,8 +176,7 @@ const searchDataController = asyncHandler(async (req, res) => {
       ward: wardNumber,
       $or: [
         { holding: searchValue }, // Search for holding in Bengali or English numerals
-
-      ]
+      ],
     });
 
     if (data) {
@@ -236,7 +235,7 @@ const searchDataController = asyncHandler(async (req, res) => {
 //           holding: holding,
 //           due: due,
 //           sn:sn,
-          
+
 //           checkbox: [
 //             {
 //               year: year.toString(),
@@ -255,14 +254,12 @@ const searchDataController = asyncHandler(async (req, res) => {
 //         message: "Payment Successfully",
 //         taxPayment,
 //         pushData
-  
+
 //       });
 
 //     }
 //     }
- 
 
-   
 //   } catch (error) {
 //     console.error(error.message);
 //     return res.status(500).json({
@@ -274,14 +271,26 @@ const searchDataController = asyncHandler(async (req, res) => {
 
 const taxPaymentController = asyncHandler(async (req, res) => {
   try {
-    const { year, paymentId, cor, due, total, ward, holding, name, villageName, sn } = req.body;
+    const {
+      year,
+      paymentId,
+      cor,
+      due,
+      total,
+      ward,
+      holding,
+      discount ,
+      name,
+      villageName,
+      sn,
+    } = req.body;
     // Save tax payment
     const taxPayment = await TaxModel(req.body).save();
 
     if (taxPayment) {
       let years = [];
       // Check if year is a string or an array
-      if (typeof year === 'string') {
+      if (typeof year === "string") {
         years = [year];
       } else if (Array.isArray(year)) {
         years = year;
@@ -295,9 +304,10 @@ const taxPaymentController = asyncHandler(async (req, res) => {
             due: due,
           },
           $push: {
-            checkbox: years.map(year => ({
+            checkbox: years.map((year) => ({
               year: year.toString(),
               total: total.toString(),
+              discount:discount.toString()
             })),
           },
         },
@@ -305,7 +315,10 @@ const taxPaymentController = asyncHandler(async (req, res) => {
       );
 
       if (data) {
-        let pushData = await NewTaxModel.findOne({ ward: ward, holding: holding });
+        let pushData = await NewTaxModel.findOne({
+          ward: ward,
+          holding: holding,
+        });
 
         // If not found, create a new one
         if (!pushData) {
@@ -318,21 +331,31 @@ const taxPaymentController = asyncHandler(async (req, res) => {
             due: due,
             sn: sn,
 
-            checkbox: years.map(year => ({ year: year.toString(), total: total.toString() })),
+            checkbox: years.map((year) => ({
+              year: year.toString(),
+              total: total.toString(),
+              discount: discount.toString(),
+            })),
           });
         } else {
           // Check if the year already exists in the checkbox array
           for (const yearItem of years) {
-            const yearExists = pushData.checkbox.some(item => item.year === yearItem.toString());
+            const yearExists = pushData.checkbox.some(
+              (item) => item.year === yearItem.toString()
+            );
 
             if (!yearExists) {
               // If the year does not exist, create a new object
-              pushData.checkbox.push({ year: yearItem.toString(), total: total.toString() });
+              pushData.checkbox.push({
+                year: yearItem.toString(),
+                total: total.toString(),
+                discount: discount.toString(),
+              });
             } else {
               // If the year exists, update the existing object
-              pushData.checkbox = pushData.checkbox.map(item => {
+              pushData.checkbox = pushData.checkbox.map((item) => {
                 if (item.year === yearItem.toString()) {
-                  return { ...item, total: total.toString() };
+                  return { ...item, total: total.toString(),discount:discount.toString() };
                 }
                 return item;
               });
@@ -346,7 +369,7 @@ const taxPaymentController = asyncHandler(async (req, res) => {
           success: true,
           message: "Payment Successfully",
           taxPayment,
-          pushData
+          pushData,
         });
       }
     }
@@ -358,10 +381,6 @@ const taxPaymentController = asyncHandler(async (req, res) => {
     });
   }
 });
-
-
-
-
 
 const updateQrController = asyncHandler(async (req, res) => {
   try {
@@ -405,11 +424,11 @@ const TaxRegisterGetDataController = asyncHandler(async (req, res) => {
       .limit(limit);
 
     if (taxRegister) {
-      res.status(200).send({ 
-        message: "tax Register Data", 
+      res.status(200).send({
+        message: "tax Register Data",
         taxRegister,
         currentPage: page,
-        totalPages
+        totalPages,
       });
     }
   } catch (error) {
@@ -420,15 +439,13 @@ const TaxRegisterGetDataController = asyncHandler(async (req, res) => {
 
 const TaxRegisterRecipt = asyncHandler(async (req, res) => {
   try {
-   
     const id = req.params.id;
-    const recipt = await TaxModel.findById(id)
-      
+    const recipt = await TaxModel.findById(id);
+
     if (recipt) {
-      res.status(200).send({ 
-        message: "tax Register Data", 
+      res.status(200).send({
+        message: "tax Register Data",
         recipt,
-       
       });
     }
   } catch (error) {
@@ -439,15 +456,12 @@ const TaxRegisterRecipt = asyncHandler(async (req, res) => {
 
 const paymentRecipt = asyncHandler(async (req, res) => {
   try {
-   
-   
-    const recipt = await TaxModel.find({}).sort({createdAt: -1})
-      
+    const recipt = await TaxModel.find({}).sort({ createdAt: -1 });
+
     if (recipt) {
-      res.status(200).send({ 
-        message: "tax Register Data", 
+      res.status(200).send({
+        message: "tax Register Data",
         recipt,
-       
       });
     }
   } catch (error) {
@@ -456,18 +470,23 @@ const paymentRecipt = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-export { getWardDataController, getVillageDataController, asesmentMakeDataController, asesmentGetDataController, getSingleDetailsDataController, singleDataUpdateController, singleDataDeleteController, allDataCalculateController, searchDataController, taxPaymentController, updateQrController, TaxRegisterGetDataController,TaxRegisterRecipt,paymentRecipt,allDataController }
-
-
-
-
+export {
+  getWardDataController,
+  getVillageDataController,
+  asesmentMakeDataController,
+  asesmentGetDataController,
+  getSingleDetailsDataController,
+  singleDataUpdateController,
+  singleDataDeleteController,
+  allDataCalculateController,
+  searchDataController,
+  taxPaymentController,
+  updateQrController,
+  TaxRegisterGetDataController,
+  TaxRegisterRecipt,
+  paymentRecipt,
+  allDataController,
+};
 
 // // ward get data
 // const wardGetDataController = async (req, res) => {
@@ -506,7 +525,6 @@ export { getWardDataController, getVillageDataController, asesmentMakeDataContro
 //     res.status(500).json({ error: "Data making error", errorMessage: error.message });
 //   }
 // };
-
 
 // // get wards data
 
