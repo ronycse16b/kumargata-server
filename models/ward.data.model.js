@@ -7,32 +7,28 @@ const wardDataSchema = new mongoose.Schema(
     },
     union: {
       type: String,
-      default: "১৪নং দৌলখাঁড় ইউনিয়ন পরিষদ"
+      default: "৪নং কুমарগাতা ইউনিয়ন পরিষদ"
     },
     cor: {
       type: Number,
     },
     motherName: {
       type: String,
-     
     },
     dateOfBirth: {
       type: Date,
-     
     },
     marriedStatus: {
       type: String,
-     
     },
     nid: {
       type: Number,
-      
     },
     fatherName: {
       type: String,
     },
     holding: {
-      type: String,
+      type: Number,
     },
     house: {
       type: String,
@@ -62,17 +58,17 @@ const wardDataSchema = new mongoose.Schema(
     villageName: {
       type: String,
     },
-    qrCode:{
-        type:String,
+    qrCode: {
+      type: String,
     },
-    potibondhi:{
-        type:String,
+    potibondhi: {
+      type: String,
     },
-    gov_vata:{
-        type:String,
+    gov_vata: {
+      type: String,
     },
     ward: {
-         type:Number
+      type: Number
     },
     yearMullayon: {
       type: Number,
@@ -92,31 +88,30 @@ const wardDataSchema = new mongoose.Schema(
   }
 );
 
-// Pre-save hook to automatically set serial number
-wardDataSchema.pre('save', async function(next) {
+// Pre-save hook to automatically set serial number and holding
+wardDataSchema.pre('save', async function (next) {
   if (!this.sn) {
     // Find the document with the highest serial number for the current ward
-    const latestDoc = await this.constructor.findOne({ ward: this.ward }, {}, { sort: { sn: -1 } });
-    
+    const latestSNDoc = await this.constructor.findOne({ ward: this.ward }, {}, { sort: { sn: -1 } });
+
     // If there are no documents for the current ward, start from 0
-    const latestSN = latestDoc ? latestDoc.sn : 0;
+    const latestSN = latestSNDoc ? latestSNDoc.sn : 0;
 
     // Increment the serial number based on the ward
-    if (this.ward === 1) {
-      this.sn = latestSN + 1;
-    } else if (this.ward === 2) {
-      // Check if the current document is a correction (black start)
-      if (this.cor) {
-        // If it's a correction, set the serial number to 1 for the second ward
-        this.sn = 1;
-      } else {
-        // If it's not a correction, increment the serial number for the second ward
-        this.sn = latestSN + 1;
-      }
-    } else {
-      // Handle other wards if needed
-    }
+    this.sn = latestSN + 1;
   }
+
+  if (!this.holding) {
+    // Find the document with the highest holding number within the same ward
+    const latestHoldingDoc = await this.constructor.findOne({ ward: this.ward }, {}, { sort: { holding: -1 } });
+
+    // If there are no documents for the current ward, start from 0
+    const latestHolding = latestHoldingDoc ? latestHoldingDoc.holding : 0;
+
+    // Increment the holding number based on the ward
+    this.holding = latestHolding + 1;
+  }
+
   next();
 });
 

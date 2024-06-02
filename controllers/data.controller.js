@@ -34,17 +34,19 @@ const getVillageDataController = asyncHandler(async (req, res) => {
 const asesmentMakeDataController = asyncHandler(async (req, res) => {
   try {
     const { holding, ward } = req.body;
-    const exsistingHolding = await WardDataModel.findOne({
+    const existingHolding = await  WardDataModel.findOne({
       ward: ward,
       holding: holding,
     });
-    if (exsistingHolding) {
+    if (existingHolding) {
+
+    console.log(existingHolding)
       return res
         .status(400)
         .send({
           success: false,
           message: "Holding already exists",
-          data: exsistingHolding,
+          data: existingHolding,
         });
     }
 
@@ -141,6 +143,20 @@ const singleDataDeleteController = asyncHandler(async (req, res) => {
 });
 
 const allDataCalculateController = asyncHandler(async (req, res) => {
+  try {
+    const ward = req.params.ward;
+    const data = await WardDataModel.find({ ward: ward });
+    res.status(200).json({
+      success: true,
+      message: "Data getting ",
+      data,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for debugging purposes
+    throw new Error(error.message);
+  }
+});
+const holdingFindController = asyncHandler(async (req, res) => {
   try {
     const ward = req.params.ward;
     const data = await WardDataModel.find({ ward: ward });
@@ -485,6 +501,7 @@ export {
   TaxRegisterGetDataController,
   TaxRegisterRecipt,
   paymentRecipt,
+  holdingFindController,
   allDataController,
 };
 
