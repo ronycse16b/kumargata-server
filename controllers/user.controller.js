@@ -39,9 +39,6 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  if (user.role === "pending") {
-    throw new Error("wating for approval");
-  } else {
     if (user && (await user.matchPassword(password))) {
       res.json({
         _id: user._id,
@@ -55,7 +52,7 @@ const loginUser = asyncHandler(async (req, res) => {
       res.status(401);
       throw new Error("Invalid email or password");
     }
-  }
+  
 });
 
 const getUserProfile = asyncHandler(async (req, res) => {

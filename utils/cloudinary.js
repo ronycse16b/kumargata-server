@@ -8,28 +8,27 @@ cloudinary.config({
 });
 
 const uploadOnCloudinary = async (fileBuffer) => {
-    try {
-      if (!fileBuffer) return null;
-  
-      // Return a Promise to properly handle the asynchronous operation
-      return new Promise((resolve, reject) => {
-        // Upload the file buffer to Cloudinary
-        cloudinary.uploader.upload_stream({ resource_type: "auto" }, async (error, result) => {
-          if (error) {
-            console.error('Error uploading to Cloudinary:', error);
-            reject('something wrong');
-            return;
-          }
-          // File has been uploaded successfully
-        //   console.log("File uploaded on Cloudinary:", result.url);
-          resolve(result.url); // Resolve the Promise with the uploaded URL
-        }).end(fileBuffer);
-      });
-    } catch (error) {
-      console.error('Error uploading to Cloudinary:', error);
-      return 'something wrong';
-    }
-  };
+  try {
+    if (!fileBuffer) return null;
+
+    // Return a Promise to properly handle the asynchronous operation
+    return new Promise((resolve, reject) => {
+      // Upload the file buffer to Cloudinary
+      cloudinary.uploader.upload_stream({ resource_type: "auto" }, (error, result) => {
+        if (error) {
+          console.error('Error uploading to Cloudinary:', error);
+          reject('Error uploading to Cloudinary');
+          return;
+        }
+        // File has been uploaded successfully
+        resolve(result.url); // Resolve the Promise with the uploaded URL
+      }).end(fileBuffer); // Ensure that fileBuffer is of type Buffer or Uint8Array
+    });
+  } catch (error) {
+    console.error('Error uploading to Cloudinary:', error);
+    return 'Error uploading to Cloudinary';
+  }
+};
   
 
 const deleteFromCloudinary = async (imageUrl) => {
