@@ -34,6 +34,8 @@ router.post("/tax-pay",  dataController.taxPaymentController);
 router.put("/update-qr/:id",dataController.updateQrController);
 router.put("/update-data/:id",  dataController.singleDataUpdateController);
 router.delete("/delete-data/:id",  dataController.singleDataDeleteController);
+// test
+
 
 export default router
  
